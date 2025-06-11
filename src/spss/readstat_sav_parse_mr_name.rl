@@ -92,16 +92,15 @@
         mr_subvariables[mr_subvar_count++] = subvar;
     }
 
-    nc = (alnum | '_' | '.' ); # name character (including dots)
-    name = nc+ '=' > extract_mr_name;
+    name = extend+ '=' > extract_mr_name;
     type = ('C' | 'D'){1} > extract_mr_type;
     counted_value = digit* ' ' > extract_counted_value;
     label = digit+ ' '+ > extract_label;
+    
+    subvar_space = (extend+ space >extract_subvar);
+    subvar_end = (extend+ '\0' >extract_subvar);
 
-    end = (space | '\0'); # subvar token terminator
-    subvariable = (nc+ end >extract_subvar);
-
-    main := name type counted_value label subvariable+;
+    main := name type counted_value label subvar_space* (subvar_end | '\0');
 
     write data nofinal noerror;
 }%%
